@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .wrap{max-width:1100px;margin:0 auto}
+  .card{background:#fff;border:1px solid #e7e7e7;border-radius:12px;padding:16px;margin:14px 0}
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:900px){.grid{grid-template-columns:360px 1fr}}
+
+  .row{display:grid;grid-template-columns:1fr 140px;gap:10px;margin:10px 0}
+  input[type="text"],input[type="number"]{width:100%;padding:10px;border:1px solid #ddd;border-radius:10px}
+  .list{max-height:320px;overflow:auto;border:1px solid #eee;border-radius:10px;padding:10px}
+  .item{display:flex;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px dashed #f0f0f0}
+  .item:last-child{border-bottom:none}
+  .btn{padding:10px 14px;border-radius:10px;border:1px solid #ddd;background:#f7f7f7;cursor:pointer;font-weight:600}
+  .btn.primary{background:#0d6efd;color:#fff;border-color:#0d6efd}
+  .badge{font-size:.85em;padding:4px 10px;border-radius:999px;background:#f0f0f0}
+
+  .tablewrap{overflow:auto;border:1px solid #eee;border-radius:12px;margin-top:10px}
+  table{width:100%;border-collapse:collapse;min-width:640px}
+  th,td{padding:10px 12px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}
+  th{position:sticky;top:0;background:#fafafa;z-index:1}
+</style>
+
+<div class="wrap">
+  <div class="grid">
+
+    <div class="card">
+      <h2>DB Explorer</h2>
+
+      <form method="POST" action="/dbexplorer">
+        <div class="row">
+          <div>
+            <label><strong>Tabelle per Name hinzufügen</strong></label>
+            <input type="text" name="table_input" placeholder="z.B. todos">
+          </div>
+          <div>
+            <label><strong>Limit</strong></label>
+            <input type="number" name="limit" min="1" max="1000" value="{{ limit }}">
+          </div>
+        </div>
+
+        <strong>Tabellen auswählen</strong>
+        <div class="list">
+          {% for t in tables %}
+            <label class="item">
+              <input type="checkbox" name="tables" value="{{ t }}" {% if t in selected %}checked{% endif %}>
+              <code>{{ t }}</code>
+            </label>
+          {% else %}
+            <div>Keine Tabellen gefunden.</div>
+          {% endfor %}
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:10px;">
+          <button class="btn primary" type="submit">Anzeigen</button>
+          <a class="btn" href="/dbexplorer" style="text-decoration:none;display:inline-flex;align-items:center;">Zurücksetzen</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+        <h2>Ergebnisse</h2>
+        <span class="badge">{% if results %}{{ results|length }} Tabelle(n){% else %}noch keine Auswahl{% endif %}</span>
+      </div>
+
+      {% for t, payload in results.items() %}
+        <div class="card" style="margin:12px 0;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+            <h3><code>{{ t }}</code></h3>
+            <span class="badge">{{ payload.rows|length }} Zeile(n)</span>
+          </div>
+
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  {% for c in payload.columns %}
+                    <th>{{ c }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in payload.rows %}
+                  <tr>
+                    {% for cell in row %}
+                      <td>{{ cell }}</td>
+                    {% endfor %}
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="{{ payload.columns|length }}">Keine Daten.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
