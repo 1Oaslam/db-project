@@ -129,6 +129,69 @@ def complete():
     todo_id = request.form.get("id")
     db_write("DELETE FROM todos WHERE user_id=%s AND id=%s", (current_user.id, todo_id,))
     return redirect(url_for("index"))
+@app.route("/dbexplorer", methods=["GET", "POST"])
+@login_required
+def dbexplorer():
+    # 1) Alle Tabellennamen holen
+    tables_raw = db_read("SHOW TABLES")
 
+    # db_read liefert je nach Setup Liste von dicts oder tuples -> beides abfangen
+    all_tables = []
+    for row in (tables_raw or []):
+        if isinstance(row, dict):
+            all_tables.append(next(iter(row.values())))
+        else:
+            all_tables.append(row[0])
+
+    selected_tables = []
+    limit = 50
+    results = {}
+
+    if request.method == "POST":
+        # 2) Inputs aus dem Formular
+        selected_tables = request.form.getlist("tables")
+        table_input = (request.form.get("table_input") or "").strip()
+
+        # Limit (falls leer/kaputt -> 50)
+        try:
+            limit = int(request.form.get("limit", 50))
+        except:
+            limit = 50
+
+        # Optional: Tabelle aus Textfeld hinzufügen
+        if table_input and table_input in all_tables and table_input not in selected_tables:
+            selected_tables.append(table_input)
+
+        # 3) Gewählte Tabellen lesen
+        for t in selected_tables:
+            # Spaltennamen holen
+            cols_raw = db_read(f"DESCRIBE `{t}`")
+            columns = []
+            for c in (cols_raw or []):
+                if isinstance(c, dict):
+                    columns.append(c.get("Field"))
+                else:
+                    columns.append(c[0])
+
+            # Daten holen
+            rows = db_read(f"SELECT * FROM `{t}` LIMIT {limit}")
+
+            # rows kann dicts oder tuples enthalten -> normalisieren
+            normalized_rows = []
+            if rows:
+                if isinstance(rows[0], dict):
+                    normalized_rows = [[r.get(col) for col in columns] for r in rows]
+                else:
+                    normalized_rows = rows
+
+            results[t] = {"columns": columns, "rows": normalized_rows}
+
+    return render_template(
+        "dbexplorer.html",
+        tables=all_tables,
+        selected=selected_tables,
+        results=results,
+        limit=limit
+    )
 if __name__ == "__main__":
     app.run()
