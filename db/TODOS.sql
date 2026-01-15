@@ -56,31 +56,30 @@ CREATE TABLE spieler_training (
     FOREIGN KEY (spieler_id) REFERENCES spieler(spieler_id),
     FOREIGN KEY (training_id) REFERENCES training(training_id)
 
-    -- Beispiel-Spieler
+    
 INSERT INTO spieler (name, geburtsdatum, position) VALUES
 ('Lionel Messi', '1987-06-24', 'Stürmer'),
 ('Luka Modric', '1985-09-09', 'Mittelfeld'),
 ('Manuel Neuer', '1986-03-27', 'Torwart');
 
 
--- Beispiel-Spiele
+
 INSERT INTO spiel (datum, gegner, tore_team, tore_gegner) VALUES
 ('2025-03-01', 'FC Basel', 3, 1),
 ('2025-03-08', 'FC Zürich', 2, 2);
 
 
--- Beispiel-Trainings
 INSERT INTO training (datum) VALUES
 ('2025-02-20'),
 ('2025-02-27');
 
--- Beispiel-Ereignisse
+
 INSERT INTO ereignis (ereignis_typ, spiel_id, spieler_id) VALUES
 ('Tor', 1, 1),
 ('Assist', 1, 2),
 ('Gelbe Karte', 2, 3);
 
--- Spieler spielt in Spiel
+
 INSERT INTO spielt (spieler_id, spiel_id) VALUES
 (1, 1),
 (2, 1),
@@ -88,7 +87,7 @@ INSERT INTO spielt (spieler_id, spiel_id) VALUES
 (1, 2),
 (2, 2);
 
--- Spieler nimmt an Training teil
+
 INSERT INTO nimmt_teil (spieler_id, training_id) VALUES
 (1, 1),
 (2, 1),
