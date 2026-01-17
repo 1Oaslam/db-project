@@ -74,13 +74,13 @@ INSERT INTO training (datum) VALUES
 ('2025-02-27');
 
 
-INSERT INTO ereignis (ereignis_typ, spiel_id, spieler_id) VALUES
+INSERT INTO ereignis (typ, spiel_id, spieler_id) VALUES
 ('Tor', 1, 1),
 ('Assist', 1, 2),
 ('Gelbe Karte', 2, 3);
 
 
-INSERT INTO spielt (spieler_id, spiel_id) VALUES
+INSERT INTO spieler_spiel (spieler_id, spiel_id) VALUES
 (1, 1),
 (2, 1),
 (3, 1),
@@ -88,7 +88,7 @@ INSERT INTO spielt (spieler_id, spiel_id) VALUES
 (2, 2);
 
 
-INSERT INTO nimmt_teil (spieler_id, training_id) VALUES
+INSERT INTO spieler_training (spieler_id, training_id) VALUES
 (1, 1),
 (2, 1),
 (3, 2);
