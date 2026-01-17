@@ -55,6 +55,7 @@ CREATE TABLE spieler_training (
     PRIMARY KEY (spieler_id, training_id),
     FOREIGN KEY (spieler_id) REFERENCES spieler(spieler_id),
     FOREIGN KEY (training_id) REFERENCES training(training_id)
+);
 
     
 INSERT INTO spieler (name, geburtsdatum, position) VALUES
